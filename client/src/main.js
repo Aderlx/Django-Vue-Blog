@@ -23,17 +23,17 @@ router.beforeEach((to, from, next) => {
   //from: 从哪个路由来
   //next：是一个方法，使用路由拦截，必须在后面添加next()，否则路由无法跳转
 
-  console.log(to)
-  console.log(from)
+  console.log(to,1)
+  console.log(from,1)
 
-  if (to.name == "Admin") {
+  if (to.path.indexOf("admin")!=-1) {
     // 权限确认
     auth().then(response => {
       console.log(response)
       if (response.data.is_superuser) {
         next()
       } else {
-        router.push("/404")
+        router.push("/login")
       }
     })
   } else {

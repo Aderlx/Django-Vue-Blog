@@ -52,7 +52,7 @@ class CustomViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, pk=None, *args, **kwargs):
         response = super().partial_update(request, *args, **kwargs)
-        return Response(ReturnMsg(data=response.data).dict(), status=response.status_code)
+        return Response(response.data, status=response.status_code)
 
     def destroy(self, request, pk=None, *args, **kwargs):
         response = super().destroy(request, *args, **kwargs)
@@ -66,8 +66,9 @@ class CustomViewSet(viewsets.ModelViewSet):
         if self.name == 'Search':
             return []
 
-        # if self.action not in ['list', 'retrieve']:
-        #     return [permissions.IsAdminUser()]
+        if self.action not in ['list', 'retrieve']:
+            return [permissions.IsAdminUser()]
+
         return []
 
 

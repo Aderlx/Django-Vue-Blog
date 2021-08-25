@@ -39,8 +39,12 @@
         fetchProfile
     } from "@/api/common.js"
     import {
+        saveProfile,
         updateProfile
     } from "@/api/backend.js"
+    import {
+        successMessage
+    } from "@/utils/message.js"
 
     export default {
         name: 'ProfileAdmin',
@@ -53,7 +57,8 @@
 
         data() {
             return {
-                form: {}
+                form: {},
+                is_exist_profile: false,
 
             }
         },
@@ -63,15 +68,26 @@
         methods: {
             handleSave() {
                 var fd = new FormData();
-                // if (this.$refs.avatarUpload.uploadFiles.length != 0) {
-                fd.append('avater', this.$refs.avatarUpload.uploadFiles[0].raw); //传文件
-                // }
-                fd.append('descriotion',this.form.descriotion)
-                fd.append('email',this.form.email)
-                fd.append('github',this.form.github)
-                updateProfile(fd).then(response => {
-                    console.log(response)
-                })
+                if (this.$refs.avatarUpload.uploadFiles.length != 0) {
+                    fd.append('avater', this.$refs.avatarUpload.uploadFiles[0].raw); //传文件
+                }
+                fd.append('descriotion', this.form.descriotion)
+                fd.append('email', this.form.email)
+                fd.append('github', this.form.github)
+                if (!this.is_exist_profile) {
+                    saveProfile(fd).then(response => {
+                        if (response.code == 1) {
+                            successMessage("保存成功!")
+                        }
+                    })
+                } else {
+                    updateProfile(fd).then(response => {
+                        if (response.code == 1) {
+                            successMessage("更新成功!")
+                        }
+                    })
+                }
+
 
 
             },
@@ -80,7 +96,11 @@
                 fetchProfile().then(response => {
                     console.log(response)
                     if (response.code == 1) {
-                        this.form = response.data
+                        if (response.data.length != 0) {
+                            this.form = response.data[0]
+                            this.is_exist_profile = true
+                        }
+
                     }
                 })
             },
